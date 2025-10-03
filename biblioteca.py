@@ -1,21 +1,66 @@
+from csv import reader, writer
+
 def carica_da_file(file_path):
     """Carica i libri dal file"""
-    # TODO
+    try:
+        with open(file_path, "r", encoding="utf-8") as lettura_file:
+            lettura = reader(lettura_file, delimiter=",")
+            numero_sezioni = int(next(lettura)[0])
+
+            biblioteca = {}
+            for sezione in range(1, numero_sezioni + 1):
+                biblioteca[sezione] = []
+
+            for riga in lettura:
+                biblioteca[int(riga[4])].append([riga[0], riga[1], int(riga[2]), int(riga[3]), int(riga[4])])
+
+            return biblioteca
+
+    except FileNotFoundError:
+        return None
 
 
 def aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path):
     """Aggiunge un libro nella biblioteca"""
-    # TODO
+    if sezione not in biblioteca:
+        return None
+
+    for lista in biblioteca.values():
+        for libro in lista:
+            if libro[0] == titolo:
+                return None
+
+    nuovo = [titolo, autore, anno, pagine, sezione]
+    biblioteca[sezione].append(nuovo)
+
+    try:
+        with open(file_path, "a", encoding="utf-8") as aggiunta_nuovo:
+            aggiunta = writer(aggiunta_nuovo)
+            aggiunta.writerow(nuovo)
+    except FileNotFoundError:
+        return None
+
+    return nuovo
 
 
 def cerca_libro(biblioteca, titolo):
     """Cerca un libro nella biblioteca dato il titolo"""
-    # TODO
+    for lista in biblioteca.values():
+        for libro in lista:
+            if libro[0] == titolo:
+                return f"{libro[0]}, {libro[1]}, {libro[2]}, {libro[3]}, {libro[4]}"
+    return None
 
 
 def elenco_libri_sezione_per_titolo(biblioteca, sezione):
     """Ordina i titoli di una data sezione della biblioteca in ordine alfabetico"""
-    # TODO
+    for s in biblioteca.keys():
+        if s == sezione:
+            titoli = []
+            for libro in biblioteca[s]:
+                titoli.append(libro[0])
+            return sorted(titoli)
+    return None
 
 
 def main():
